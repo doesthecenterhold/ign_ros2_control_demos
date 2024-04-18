@@ -1,79 +1,163 @@
 <?xml version="1.0" ?>
-<robot name="arm">
+<robot name="arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <link name="world"/>
 
-  <link name='arm_base_link'>
-    <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-      <visual name='arm_base_link_visual'>
-        <origin xyz="0 0 0"/>
-        <geometry>
-          <cylinder radius="0.05" length="0.02"/>
-        </geometry>
-      <material name="grey">
-        <color rgba="0.2 0.2 0.2 1"/>
-      </material>
-      </visual>
-    </link>
-  
-<link name='lower_arm_link'>
-    <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-      <visual name='lower_link_visual'>
-        <origin xyz="0 0 0"/>
-        <geometry>
-          <cylinder radius="0.01" length="0.5"/>
-        </geometry>
-      <material name="grey">
-        <color rgba="0.2 0.2 0.2 1"/>
-      </material>
-      </visual>
-    </link>
+  <xacro:property name="link_len" value="0.25" />
+  <xacro:property name="wrist_len" value="0.05" />
 
   <joint name="world_to_base" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="world"/>
     <child link="arm_base_link"/>
   </joint>
-  
-<!-- 
-<joint name='joint_0' type='revolute'>
-      <origin xyz="0.25 0 0.1" rpy="0 1.57 0"/>
-      <parent link="arm_base_link"/>
-      <child link="lower_arm_link"/>
-      <axis xyz="0 0 1"/>
-      <limit effort="500" velocity="10" lower="-3.14" upper="3.14"/>
-</joint> 
--->
-<!-- 
-  <joint name="joint_base" type="continuous">
+
+  <link name='arm_base_link'>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+      <visual name='arm_base_link_visual'>
+        <origin xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.001"/>
+        </geometry>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+      </visual>
+    </link>
+
+  <joint name="arm_base_joint" type="continuous">
     <axis xyz="0 0 1"/>
-    <origin xyz="0.0 0 0.1" rpy="0 1.57 0"/>
+    <origin xyz="0.0 0 0.002" rpy="0 0 0"/>
     <parent link="arm_base_link"/>
-    <child link="lower_arm_link"/>
+    <child link="arm_base2_link"/>
     <limit effort="1000.0" velocity="10"/>
   </joint>
--->
-<joint name="joint_base" type="prismatic">
-    <axis xyz="0 0 1"/>
-    <origin xyz="0.0 0 0.1" rpy="0 1.57 0"/>
-    <parent link="arm_base_link"/>
-    <child link="lower_arm_link"/>
-    <limit effort="1000.0" lower="-0.1" upper="0.38" velocity="10"/>
-</joint>
-   
+
+  <link name='arm_base2_link'>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+      <visual name='arm_base2_link'>
+        <origin xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.01"/>
+        </geometry>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+      </visual>
+  </link>
+
+  <joint name="arm_shoulder_joint" type="continuous">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0 0.01" rpy="0 0 0"/>
+    <parent link="arm_base2_link"/>
+    <child link="arm_shoulder_link"/>
+    <limit effort="1000.0" velocity="10"/>
+  </joint>
+  
+<link name='arm_shoulder_link'>
+    <inertial>
+      <origin xyz="0 0 ${link_len/2}"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+      <visual name='lower_link_visual'>
+        <origin xyz="0 0 ${link_len/2}"/>
+        <geometry>
+          <cylinder radius="0.01" length="${link_len}"/>
+        </geometry>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+      </visual>
+  </link>
+
+  <joint name="arm_elbow_joint" type="continuous">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0 ${link_len}" rpy="0 0 0"/>
+    <parent link="arm_shoulder_link"/>
+    <child link="arm_elbow_link"/>
+    <limit effort="1000.0" velocity="10"/>
+  </joint>
+
+  <link name='arm_elbow_link'>
+    <inertial>
+      <origin xyz="0 0 ${link_len/2}"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+      <visual name='lower_link_visual'>
+        <origin xyz="0 0 ${link_len/2}"/>
+        <geometry>
+          <cylinder radius="0.01" length="${link_len}"/>
+        </geometry>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+      </visual>
+  </link>
+
+  <joint name="arm_wrist_joint" type="continuous">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0 ${link_len}" rpy="0 0 0"/>
+    <parent link="arm_elbow_link"/>
+    <child link="arm_wrist_link"/>
+    <limit effort="1000.0" velocity="10"/>
+  </joint>
+
+  <link name='arm_wrist_link'>
+    <inertial>
+      <origin xyz="0 0 ${wrist_len/2}"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+      <visual name='lower_link_visual'>
+        <origin xyz="0 0 ${wrist_len/2}"/>
+        <geometry>
+          <cylinder radius="0.01" length="${wrist_len}"/>
+        </geometry>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+      </visual>
+  </link>
+
   <ros2_control name="arm_controller_hw" type="system">
     <hardware>
       <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
-    <joint name="joint_base">
+    <joint name="arm_base_joint">
       <command_interface name="position"/>
       <state_interface name="position">
-        <param name="initial_value">0.01</param>
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="arm_shoulder_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="arm_elbow_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="arm_wrist_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
       </state_interface>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
@@ -85,4 +169,5 @@
       <parameters>$(find ign_ros2_control_demos)/config/arm_controller_position.yaml</parameters>
     </plugin>
   </gazebo>
+
 </robot>
