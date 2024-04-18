@@ -18,3 +18,5 @@ ros2 topic pub --once /arm_controller/commands std_msgs/msg/Float64MultiArray "d
 With this command you can move the cylinder to any position between 0.0 and 0.35.
 
 Now, for the magic. Open the file `test_simple_arm.xacro.urdf`. Then change the line `<joint name="joint_base" type="prismatic">` to `<joint name="joint_base" type="revolute">`. Now run the simulation again. Surprise! Nothing works. Why? Because ros2 control hates you.
+
+For more details, visit `https://github.com/ros-controls/gz_ros2_control/blob/humble/doc/index.rst`
