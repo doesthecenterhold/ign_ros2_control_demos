@@ -11,12 +11,7 @@ ros2 launch ign_ros2_control_demos arm_position.launch.py
 In another terminal run:
 
 ```
-ros2 topic pub --once /arm_controller/commands std_msgs/msg/Float64MultiArray "data:
-- 0.35"
+ros2 topic pub --once /arm_controller/commands std_msgs/msg/Float64MultiArray "{data: [0., 0.25, 2.5, -1.0],layout: {dim:[], data_offset: 1"}}
 ```
 
-With this command you can move the cylinder to any position between 0.0 and 0.35.
-
-Now, for the magic. Open the file `test_simple_arm.xacro.urdf`. Then change the line `<joint name="joint_base" type="prismatic">` to `<joint name="joint_base" type="revolute">`. Now run the simulation again. Surprise! Nothing works. Why? Because ros2 control hates you.
-
-For more details, visit `https://github.com/ros-controls/gz_ros2_control/blob/humble/doc/index.rst`
+The arm should move! First is base_joint, then shoulder_joint, then elbow_joint and then wrist_joint.
